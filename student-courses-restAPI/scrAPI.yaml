@@ -1,0 +1,40 @@
+---
+parameters:
+  - name: DockerHubRegistry
+    default: DockerHub_service_connection
+    type: string
+  - name: DockerHubRepository
+    default: tarunkumarpendem/studentcourses
+    type: string
+  - name: image_tag
+    default: feb_21_2k23_1pm
+    type: string  
+
+stages:
+  - stage: 'Build_and_Push'
+    displayName: 'Docker image build and push to DockerHub'
+    jobs:
+      - job: 'Build'
+        displayName: 'Docker image build'
+        steps:
+          - task: Docker@2
+            inputs:
+              command: 'buildAndPush'
+              Dockerfile: '**/Dockerfile'
+              containerRegistry: ${{ parameters.DockerHubRegistry }}
+              repository: ${{ parameters.DockerHubRepository }}
+              tags: ${{ parameters.image_tag }}
+  - stage: 'EKS_provision'
+    displayName: 'Provisioninf EKS Cluster from Terraform in other agent pool'
+    pool: 'EKS'   
+    jobs:
+      - job: 'EKS Provisioning'
+        steps:
+          - task: Bash@3
+            inputs:
+              targetType: 'inline'
+              script: "git clone https://github.com/tarunkumarpendem/learn-terraform-provision-eks-cluster.git && cd learn-terraform-provision-eks-cluster && terraform init && terraform apply -auto-approve"
+          
+          
+
+               

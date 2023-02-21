@@ -28,7 +28,7 @@ stages:
     displayName: 'Provisioninf EKS Cluster from Terraform in other agent pool'
     pool: 'EKS'   
     jobs:
-      - job: 'EKS Provisioning'
+      - job: 'EKS_Provisioning'
         steps:
           - task: Bash@3
             inputs:
